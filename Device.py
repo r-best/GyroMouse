@@ -1,18 +1,22 @@
 import bluetooth
 
-target_name = "Kevo"
-target_address = None
+print("Searching for bluetooth-enabled client devices...\n")
+devices = bluetooth.discover_devices()
 
-print(bluetooth.lookup_name("Kevo"))
+if devices.__len__() == 1:
+    print(devices.__len__() + " device discovered")
+else:
+    print(devices.__len__() + " devices discovered")
 
-# nearby_devices = bluetooth.discover_devices()
-#
-# for bdaddr in nearby_devices:
-#     if target_name == bluetooth.lookup_name(bdaddr):
-#         target_address = bdaddr
-#         break
-#
-# if target_address is not None:
-#     print("found target bluetooth device with address ", target_address)
-# else:
-#     print("could not find target bluetooth device nearby")
+i = 0
+for addr, name in devices:
+    print(str(i) + " - " + name + '(' + addr + ')')
+    i += 1
+
+client_index = input("Please enter the number (shown above) of the device you would like to connect to:")
+client_addr = devices[client_index][0]
+
+sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+sock.connect((client_addr, 1997))
+
+sock.send("Back to the future")
