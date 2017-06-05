@@ -1,12 +1,18 @@
 import bluetooth
 
 print("Searching for bluetooth-enabled client devices...\n")
-devices = bluetooth.discover_devices()
+
+while True:
+    devices = bluetooth.discover_devices(duration=10, lookup_names=True)
+
+    if devices.__len__() != 0:
+        break;
+    print("No devices found, retrying...")
 
 if devices.__len__() == 1:
-    print(devices.__len__() + " device discovered")
+    print(str(devices.__len__()) + " device discovered")
 else:
-    print(devices.__len__() + " devices discovered")
+    print(str(devices.__len__()) + " devices discovered")
 
 i = 0
 for addr, name in devices:
@@ -17,6 +23,8 @@ client_index = input("Please enter the number (shown above) of the device you wo
 client_addr = devices[client_index][0]
 
 sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-sock.connect((client_addr, 1997))
+sock.connect((client_addr, 21997))
 
 sock.send("Back to the future")
+
+sock.close()
