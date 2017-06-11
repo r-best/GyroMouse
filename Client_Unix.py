@@ -33,8 +33,8 @@ client_sock, address = server_sock.accept()
 print("Received connection from " + str(address))
 
 while True:
-    data = str(client_sock.recv(1024).decode()).split(':')
-    print(data[0], data[1])
+    data = client_sock.recv(1024).decode()
+    print(data)#, data[1])
 
     # current_pos = mouse.position()
     # mouse.move(current_pos[0] + data[0], current_pos[1] + data[1])

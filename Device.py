@@ -57,22 +57,22 @@ def calibrate():
 def calculate_accel():
     orientation = sense.get_orientation_degrees()
     pitch = orientation["pitch"]
-    roll = orientation["roll"]
+    # roll = orientation["roll"]
 
     accel_horiz = 0
-    accel_vert = 0
+    # accel_vert = 0
 
     if pitch < zero_pitch:
         accel_horiz = -1
     elif pitch > zero_pitch:
         accel_horiz = 1
 
-    if roll < zero_roll:
-        accel_vert = -1
-    elif roll > zero_roll:
-        accel_vert = 1
+    # if roll < zero_roll:
+    #     accel_vert = -1
+    # elif roll > zero_roll:
+    #     accel_vert = 1
 
-    return accel_horiz, accel_vert
+    return accel_horiz#, accel_vert
 
 
 def inc_notificator():
@@ -91,14 +91,14 @@ sense.low_light = True
 calibrate()
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect(('127.0.0.1', 21997))
+sock.connect(('192.168.0.14', 21997))
 
 while True:
     sense.show_letter(note)
     inc_notificator()
 
-    accel_horiz, accel_vert = calculate_accel()
-    sock.send((str(accel_horiz) + ':' + str(accel_vert)).encode())
+    accel_horiz = calculate_accel()
+    sock.send(str(accel_horiz).encode())# + ':' + str(accel_vert)).encode())
     time.sleep(.001)
 
 sock.close()
