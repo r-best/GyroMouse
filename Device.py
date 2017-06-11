@@ -22,22 +22,72 @@ import bluetooth
 # client_index = input("Please enter the number (shown above) of the device you would like to connect to:")
 # client_addr = devices[client_index][0]
 
-service_matches = bluetooth.find_service(uuid="abcd")
+# service_matches = bluetooth.find_service(uuid="abcd")
+#
+# if len(service_matches) == 0:
+#     print("Couldn't find the service")
+#
+# first_match = service_matches[0]
+# port = first_match["port"]
+# name = first_match["name"]
+# host = first_match["host"]
+#
+# print("Connecting to " + str(name) + " on " + str(host))
+#
+# sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+# sock.connect((host, port))
+# # sock.connect((client_addr, 20))
+#
+# sock.send("Back to the future")
+#
+# sock.close()
 
-if len(service_matches) == 0:
-    print("Couldn't find the service")
+import socket
+import time
+from sense_hat import SenseHat
 
-first_match = service_matches[0]
-port = first_match["port"]
-name = first_match["name"]
-host = first_match["host"]
 
-print("Connecting to " + str(name) + " on " + str(host))
+def calibrate():
+    new_zero = sense.get_orientation_degrees()
+    global zero_pitch, zero_roll
+    zero_pitch = new_zero["pitch"]
+    zero_roll = new_zero["roll"]
 
-sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-sock.connect((host, port))
-# sock.connect((client_addr, 20))
 
-sock.send("Back to the future")
+def calculate_accel():
+    orientation = sense.get_orientation_degrees()
+    pitch = orientation["pitch"]
+    roll = orientation["roll"]
+
+    accel_horiz = 0
+    accel_vert = 0
+
+    if pitch < zero_pitch:
+        accel_horiz = -1
+    elif pitch > zero_pitch:
+        accel_horiz = 1
+
+    if roll < zero_roll:
+        accel_vert = -1
+    elif roll > zero_roll:
+        accel_vert = 1
+
+    return accel_horiz, accel_vert
+
+zero_pitch = 0
+zero_roll = 0
+
+sense = SenseHat()
+sense.set_imu_config(False, True, False)
+sense.low_light = True
+calibrate()
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.connect(('127.0.0.1', 21997))
+
+while True:
+    accel_horiz, accel_vert = calculate_accel()
+    sock.send((str(accel_horiz) + ':' + str(accel_vert)).encode())
+    time.sleep(.001)
 
 sock.close()
