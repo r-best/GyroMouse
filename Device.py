@@ -74,6 +74,14 @@ def calculate_accel():
 
     return accel_horiz, accel_vert
 
+
+def inc_notificator():
+    global note
+    note = note + 1
+    if note >= 10:
+        note = 0
+
+note = 0
 zero_pitch = 0
 zero_roll = 0
 
@@ -86,6 +94,9 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect(('127.0.0.1', 21997))
 
 while True:
+    sense.show_letter(note)
+    inc_notificator()
+
     accel_horiz, accel_vert = calculate_accel()
     sock.send((str(accel_horiz) + ':' + str(accel_vert)).encode())
     time.sleep(.001)
