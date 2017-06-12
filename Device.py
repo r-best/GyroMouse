@@ -82,7 +82,7 @@ sock.connect(('192.168.0.14', 21998))
 
 while True:
     pitch_accel, roll_accel = calculate_accel()
-    sock.send((str(pitch_accel) + " " + str(roll_accel)).encode())
+    sock.send(("$" + str(pitch_accel) + " " + str(roll_accel) + "$").encode())
 
     print(pitch_accel, roll_accel)
 
