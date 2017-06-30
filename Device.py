@@ -6,13 +6,12 @@ from sense_hat import SenseHat
 def is_in(number, ranges):
     if type(ranges) == list:
         for i in range(0, ranges.__len__()):
-            if ranges[i][0] <= number <= ranges[i][1]:
+            if number >= ranges[i][0] and number <= ranges[i][1]:
                 return True
     elif type(ranges) == tuple:
-        if ranges[0] <= number <= ranges[1]:
+        if number >= ranges[0] and number <= ranges[1]:
             return True
     return False
-
 
 def calibrate():
     new_zero = sense.get_orientation_degrees()
@@ -33,11 +32,11 @@ def calibrate_axis(zero):
         right_bound = 360 + right_bound
     if left_bound > 360:
         left_bound = 0 + (left_bound - 360)
-
+    
     range_n = calculate_range(right_bound, left_bound + 1)
     range_l = calculate_range(left_bound, split + 1)
     range_r = calculate_range(split, right_bound + 1)
-
+    
     return range_n, range_l, range_r
 
 
@@ -92,3 +91,4 @@ while True:
     time.sleep(.01)
 
 sock.close()
+
